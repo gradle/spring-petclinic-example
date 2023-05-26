@@ -26,4 +26,13 @@ jobs:
           distribution: 'adopt'
           cache: maven
       - name: Build with Maven Wrapper
-        run: ./mvnw -B package
+        run: ./mvnw clean verify --batch-mode --no-transfer-progress
+        env:
+          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
+
+      - name: Add BuildScan link to the summary
+        # Don't add links to scans on forks; they don't have an access tokens
+        if: github.event.pull_request.head.repo.full_name == github.repository && !cancelled()
+        # The `CI run` custom value is automatically created by the common-custom-user-data-maven-extension, defined by .mvn/extensions.xml
+        run: echo "🐘[Gradle Enterprise BuildScan](https://events.gradle.com/scans?search.names=CI%20run&search.values=$GITHUB_RUN_ID)" >> $GITHUB_STEP_SUMMARY
+

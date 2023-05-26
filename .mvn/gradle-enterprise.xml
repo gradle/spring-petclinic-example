@@ -1,0 +1,27 @@
+<gradleEnterprise>
+  <server>
+    <!-- Your Gradle Enterprise URL -->
+    <url>https://ge.example.com</url>
+  </server>
+  <buildScan>
+    <capture>
+      <!-- Enable recording detailed build information -->
+      <goalInputFiles>true</goalInputFiles>
+      <buildLogging>true</buildLogging>
+      <testLogging>true</testLogging>
+    </capture>
+    <!-- Upload the build scan synchronously for CI -->
+    <backgroundBuildScanUpload>#{isFalse(env['GITHUB_ACTIONS'])}</backgroundBuildScanUpload>
+  </buildScan>
+  <buildCache>
+    <local>
+      <!-- Disable local cache for ephemeral CI agents -->
+      <enabled>#{isFalse(env['GITHUB_ACTIONS'])}</enabled>
+    </local>
+    <remote>
+      <!-- Enable remote cache publishing from CI agents -->
+      <enabled>true</enabled>
+      <storeEnabled>#{isTrue(env['GITHUB_ACTIONS'])}</storeEnabled>
+    </remote>
+  </buildCache>
+</gradleEnterprise>
